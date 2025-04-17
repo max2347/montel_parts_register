@@ -1,0 +1,41 @@
+# Виртуальное окружение
+venv/
+env/
+*.venv
+.env
+
+# Байт-код Python и кэш
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Файлы IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Зависимости (если установлены локально не через venv)
+# lib/
+# include/
+# bin/
+
+# Логи
+*.log
+logs/
+
+# Базы данных
+*.sqlite3
+db.sqlite3
+
+# Секреты (пример)
+# config.ini
+# settings.local.py
+
+# Дистрибутивы и сборки
+dist/
+build/
+*.egg-info/
+
+
+not_commited_file.py
