@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+alembic
+python-dotenv # Для чтения .env файла
+psycopg2-binary # Хотя мы используем SQLite, Alembic иногда требует адаптер PostgreSQL для некоторых операций, можно заменить на другой если будут проблемы, но часто этот работает "из коробки"

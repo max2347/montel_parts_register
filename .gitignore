@@ -27,6 +27,7 @@ logs/
 # Базы данных
 *.sqlite3
 db.sqlite3
+metal_parts.db
 
 # Секреты (пример)
 # config.ini
@@ -36,6 +37,3 @@ db.sqlite3
 dist/
 build/
 *.egg-info/
-
-
-not_commited_file.py
