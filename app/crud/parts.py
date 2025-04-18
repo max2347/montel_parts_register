@@ -11,25 +11,44 @@ MAX_PART_NUMBER = 100000
 
 def get_next_available_part_number(db: Session) -> Optional[int]:
     """Находит следующий доступный номер детали в диапазоне."""
-    # Находим максимальный существующий номер детали
-    max_part_number = db.exec(
-        select(func.max(MetalPart.part_number))).scalar_one_or_none()
+
+    statement = select(func.max(MetalPart.part_number))
+    result = db.exec(statement)  # Выполняем запрос
+
+    # --- Используем .first() так как .scalar_one_or_none() недоступен ---
+    first_row = result.first()  # Получаем первую строку (кортеж) или None
+    if first_row:
+        # Проверяем, что first_row не пустой и содержит хотя бы один элемент (сам максимум)
+        if first_row[0] is not None:
+            # Берем первый элемент из строки и преобразуем в int
+            # func.max() может вернуть Decimal или другой тип в некоторых БД, int() безопаснее
+            try:
+                 max_part_number = int(first_row[0])
+            except (ValueError, TypeError):
+                 # Обработка случая, если значение не может быть преобразовано в int
+                 print(
+                     f"Warning: Could not convert max part number '{first_row[0]}' to int.")
+                 # Решите, как обрабатывать эту ошибку - возможно, вернуть None или 0
+                 max_part_number = None  # Или другое значение по умолчанию
+        else:
+            max_part_number = None # Если в базе максимальное значение NULL (столбец пуст)
+    else:
+        max_part_number = None  # Если строк нет (таблица пуста)
+    # --- Конец блока с .first() ---
 
     if max_part_number is None:
-        # Если деталей нет, начинаем с минимального номера
+        # Если деталей нет или была ошибка конвертации, начинаем с минимального номера
         next_number = MIN_PART_NUMBER
     else:
         next_number = max_part_number + 1
 
+    # Проверяем выход за границы диапазона
     if next_number > MAX_PART_NUMBER:
-        # Если превысили максимальный номер, свободных номеров нет
-        return None
-    elif next_number < MIN_PART_NUMBER:
-        # Если вдруг максимальный был меньше минимального (не должно быть, но на всякий)
-        return MIN_PART_NUMBER
+        return None  # Номера закончились
+    # Эту проверку можно убрать, если max_part_number всегда >= 0 или None
+    # elif next_number < MIN_PART_NUMBER:
+    #      return MIN_PART_NUMBER
 
-    # В реальном приложении может потребоваться проверка на "дыры" в нумерации,
-    # но для простоты пока предполагаем последовательную нумерацию.
     return next_number
 
 
